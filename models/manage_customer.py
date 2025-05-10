@@ -16,13 +16,20 @@ class ManageCustomer:
         return -1
 
     def add_customer(self, customer_id, name, phone, email):
-        if self._find_customer_index(customer_id) != -1:
-            print(f"Error: Customer with ID {customer_id} already exists.")
-            return None
-        # Initially, all new customers are casual
+        for customer in self.customers:
+            if customer.customer_id == customer_id:
+                print(f"Lỗi: Mã khách hàng '{customer_id}' đã tồn tại.")
+                return None
+            if customer.phone == phone:
+                print(f"Lỗi: Số điện thoại '{phone}' đã tồn tại.")
+                return None
+            if customer.email.lower() == email.lower():
+                print(f"Lỗi: Email '{email}' đã tồn tại.")
+                return None
+
         new_customer = CasualCustomer(customer_id, name, phone, email)
         self.customers.append(new_customer)
-        print(f"Casual customer {name} added successfully.")
+        print(f"Khách hàng '{name}' đã được thêm thành công.")
         return new_customer
 
     def delete_customer(self, customer_id):
