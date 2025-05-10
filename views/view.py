@@ -1,5 +1,5 @@
 import re
-from models.manage_customer import ManageCustomer, CasualCustomer # For type hints if needed
+from models.manage_customer import ManageCustomer, CasualCustomer 
 from templates import display
 
 def get_name_input(prompt="Nhập tên khách hàng: "):
@@ -71,10 +71,9 @@ def add_new_customer_view(manager: ManageCustomer):
     display.display_message("--- Thêm khách hàng mới ---")
     customer_id, name, phone, email = get_customer_details_from_user()
     if manager.add_customer(customer_id, name, phone, email):
-        # display.display_message(f"Customer {name} added successfully.") # Manager method already prints
+        
         pass
-    # else:
-        # display.display_message(f"Failed to add customer.", is_error=True) # Manager method already prints
+   
 
 def add_purchase_view(manager: ManageCustomer):
     display.display_message("--- Thêm đơn hàng cho khách hàng ---")

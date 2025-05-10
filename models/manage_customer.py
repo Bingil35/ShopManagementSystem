@@ -7,7 +7,7 @@ LOYALTY_THRESHOLD = 2000000
 
 class ManageCustomer:
     def __init__(self):
-        self.customers = [] # List[Customer]
+        self.customers = [] # Danh sách khách hàng
 
     def _find_customer_index(self, customer_id):
         for i, customer in enumerate(self.customers):
@@ -36,10 +36,10 @@ class ManageCustomer:
         index = self._find_customer_index(customer_id)
         if index != -1:
             removed_customer = self.customers.pop(index)
-            print(f"Customer {removed_customer.name} (ID: {customer_id}) deleted successfully.")
+            print(f"Khách hàng {removed_customer.name} (Mã: {customer_id}) đã được xóa.")
             return True
         else:
-            print(f"Error: Customer with ID {customer_id} not found.")
+            print(f"Lỗi: Không tìm thấy khách hàng với mã {customer_id}.")
             return False
 
     def update_customer_info(self, customer_id, new_name=None, new_phone=None, new_email=None):
@@ -52,10 +52,10 @@ class ManageCustomer:
                 customer.phone = new_phone
             if new_email:
                 customer.email = new_email
-            print(f"Customer {customer.name} (ID: {customer_id}) updated successfully.")
+            print(f"Thông tin khách hàng {customer.name} (Mã: {customer_id}) đã được cập nhật.")
             return True
         else:
-            print(f"Error: Customer with ID {customer_id} not found for update.")
+            print(f"Lỗi: Không tìm thấy khách hàng với mã {customer_id} để cập nhật.")
             return False
 
     def add_purchase_to_customer(self, customer_id, amount):
@@ -63,11 +63,11 @@ class ManageCustomer:
         if index != -1:
             customer = self.customers[index]
             customer.add_purchase(amount)
-            print(f"Purchase of {amount} added for customer {customer.name}.")
-            self.update_customer_type(customer) # Check if type needs to change
+            print(f"Đã thêm giao dịch {amount} cho khách hàng {customer.name}.")
+            self.update_customer_type(customer) 
             return True
         else:
-            print(f"Error: Customer with ID {customer_id} not found to add purchase.")
+            print(f"Lỗi: Không tìm thấy khách hàng với mã  {customer_id} để thêm giao dịch.")
             return False
             
     def add_loyalty_points_to_customer(self, customer_id, points):
@@ -76,24 +76,24 @@ class ManageCustomer:
             customer = self.customers[index]
             if isinstance(customer, LoyalCustomer):
                 customer.add_loyalty_points(points)
-                print(f"{points} loyalty points added to {customer.name}.")
+                print(f"Đã cộng {points} điểm tích lũy cho khách hàng {customer.name}.")
                 return True
             else:
-                print(f"Error: Customer {customer.name} is not a Loyal Customer.")
+                print(f"Lỗi: Khách hàng {customer.name} không phải là khách hàng thân thiết.")
                 return False
         else:
-            print(f"Error: Customer with ID {customer_id} not found.")
+            print(f"Lỗi: Không tìm thấy khách hàng với mã {customer_id}.")
             return False
 
 
     def update_customer_type(self, customer):
         """
-        Updates the customer type based on total spending.
-        If a CasualCustomer's total_spent >= LOYALTY_THRESHOLD, they become Loyal.
+                Cập nhật loại khách hàng dựa trên tổng chi tiêu.
+        Nếu khách hàng thường có tổng chi tiêu >= LOYALTY_THRESHOLD thì sẽ thành khách hàng thân thiết.
         """
         index = self._find_customer_index(customer.customer_id)
         if index == -1:
-            return # Should not happen if customer is managed
+            return 
 
         current_customer = self.customers[index]
 
@@ -105,24 +105,12 @@ class ManageCustomer:
                 phone=current_customer.phone,
                 email=current_customer.email
             )
-            # Transfer purchase history and potentially initial loyalty points
+            
             loyal_cust.purchase_history = list(current_customer.purchase_history)
-            # loyal_cust.loyalty_points = 0 # Or some initial points
+           
             
             self.customers[index] = loyal_cust
             print(f"Customer {loyal_cust.name} (ID: {loyal_cust.customer_id}) has been upgraded to Loyal Customer.")
-        
-        # Downgrade (Optional, not explicitly in requirements but good to consider)
-        # elif isinstance(current_customer, LoyalCustomer) and current_customer.total_spent() < LOYALTY_THRESHOLD:
-        #     casual_cust = CasualCustomer(
-        #         customer_id=current_customer.customer_id,
-        #         name=current_customer.name,
-        #         phone=current_customer.phone,
-        #         email=current_customer.email
-        #     )
-        #     casual_cust.purchase_history = list(current_customer.purchase_history)
-        #     self.customers[index] = casual_cust
-        #     print(f"Customer {casual_cust.name} has been downgraded to Casual Customer.")
 
 
     def search_customer(self, keyword):
@@ -162,12 +150,12 @@ class ManageCustomer:
         return self.report_total_revenue() / len(self.customers)
 
     def report_total_revenue_by_type(self, customer_type):
-        """Calculates total revenue for a specific customer type ('Loyal' or 'Casual')."""
+        """Tính tổng doanh thu của từng loại khách hàng ("Loyal" hoặc "Casual")."""
         type_customers = self.list_customers_by_type(customer_type)
         return sum(customer.total_spent() for customer in type_customers)
 
     def report_average_spending_by_type(self, customer_type):
-        """Calculates average spending for a specific customer type."""
+        """Tính chi tiêu trung bình của từng loại khách hàng."""
         type_customers = self.list_customers_by_type(customer_type)
         if not type_customers:
             return 0
@@ -176,15 +164,15 @@ class ManageCustomer:
     
     def get_tet_promotion_candidates(self):
         """
-        Returns top 10 loyal customers with > 500 loyalty points,
-        sorted by average purchase value (descending).
+        Trả về danh sách khách hàng thân thiết có > 500 điểm tích lũy,
+        sắp xếp theo giá trị đơn hàng trung bình giảm dần.
         """
         candidates = []
         for customer in self.customers:
             if isinstance(customer, LoyalCustomer) and customer.loyalty_points > 500:
                 candidates.append(customer)
         
-        # Sort by average_spent in descending order
+        # Sắp xếp theo chi tiêu trung bình giảm dần
         candidates.sort(key=lambda c: c.average_spent(), reverse=True)
         return candidates[:10]
 
@@ -194,18 +182,18 @@ class ManageCustomer:
         try:
             with open(filename, "wb") as f:
                 pickle.dump(self.customers, f)
-            print("Data saved successfully.")
+            print("Dữ liệu đã được lưu thành công.")
         except Exception as e:
-            print(f"Error saving data: {e}")
+            print(f"Lỗi khi lưu dữ liệu: {e}")
 
     def load_data(self, filename="data/shop_data.pkl"):
         try:
             with open(filename, "rb") as f:
                 self.customers = pickle.load(f)
-            print("Data loaded successfully.")
+            print("Dữ liệu đã được tải thành công.")
         except FileNotFoundError:
-            print("No saved data found. Starting with an empty customer list.")
+            print("Không tìm thấy dữ liệu đã lưu. Bắt đầu với danh sách khách hàng trống.")
             self.customers = []
         except Exception as e:
-            print(f"Error loading data: {e}. Starting with an empty list.")
+            print(f"Lỗi khi tải dữ liệu: {e}. Bắt đầu với danh sách trống.")
             self.customers = []

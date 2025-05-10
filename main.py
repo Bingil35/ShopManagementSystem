@@ -2,11 +2,11 @@ from models.manage_customer import ManageCustomer
 from views import view
 from templates import display
 
-DATA_FILE = "data/shop_data.pkl" # Define data file path
+DATA_FILE = "data/shop_data.pkl" 
 
 def main():
     customer_manager = ManageCustomer()
-    customer_manager.load_data(DATA_FILE) # Load data at startup
+    customer_manager.load_data(DATA_FILE) 
 
     menu_options = [
         "Thêm khách hàng mới",
@@ -18,9 +18,9 @@ def main():
         "Liệt kê khách hàng theo loại (Vãng lai/Thân thiết)",
         "Hiển thị báo cáo doanh thu",
         "Hiển thị 3 khách hàng chi tiêu nhiều nhất",
-        "Hiển thị danh sách khách hàng theo tổng chi tiêu (giảm dần)", # Added based on YC3
+        "Hiển thị danh sách khách hàng theo tổng chi tiêu (giảm dần)", 
         "Hiển thị khách hàng đủ điều kiện khuyến mãi Tết",
-        "Thêm điểm tích lũy cho khách hàng thân thiết" # Added for YC1 LoyalCustomer
+        "Thêm điểm tích lũy cho khách hàng thân thiết" 
     ]
 
     while True:
@@ -46,7 +46,7 @@ def main():
                 view.display_revenue_reports_view(customer_manager)
             elif choice == 9:
                 view.display_top_customers_view(customer_manager)
-            elif choice == 10: # Display Customers Sorted by Total Spent
+            elif choice == 10: 
                 all_customers_sorted = customer_manager.sort_by_total_spent(reverse=True)
                 display.display_customer_list(all_customers_sorted, "Khách hàng theo tổng chi tiêu (giảm dần)")
             elif choice == 11:
@@ -54,14 +54,13 @@ def main():
             elif choice == 12:
                 view.add_loyalty_points_view(customer_manager)
             elif choice == 0:
-                customer_manager.save_data(DATA_FILE) # Save data on exit
+                customer_manager.save_data(DATA_FILE) 
                 display.display_message("Đang thoát chương trình. Tạm biệt!")
                 break
             else:
                 display.display_message("Lựa chọn không hợp lệ. Vui lòng thử lại.", is_error=True)
             
-            # Optionally save after every significant operation
-            # customer_manager.save_data(DATA_FILE) 
+            
 
         except ValueError:
             display.display_message("Dữ liệu không hợp lệ. Vui lòng nhập một số.", is_error=True)
