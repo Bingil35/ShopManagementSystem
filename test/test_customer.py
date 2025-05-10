@@ -254,11 +254,11 @@ class TestCustomerFileOperations(unittest.TestCase):
         c.add_purchase(2000000)
         
         # Lưu khách hàng vào file
-        with open("customer_info.json", "w", encoding="utf-8") as f:
+        with open("./data/customer_info.json", "w", encoding="utf-8") as f:
             json.dump(c.to_dict(), f, ensure_ascii=False, indent=4)
         
         # Đọc lại từ file
-        with open("customer_info.json", "r", encoding="utf-8") as f:
+        with open("./data/customer_info.json", "r", encoding="utf-8") as f:
             data = json.load(f)
         
         # Kiểm tra dữ liệu đọc từ file
