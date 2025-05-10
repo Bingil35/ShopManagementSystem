@@ -9,7 +9,7 @@ class Customer(ABC):
         self.purchase_history = []
         
     def add_purchase(self, amount):
-        if amount > 0:
+        if isinstance(amount, (int, float)) and amount > 0:
             self.purchase_history.append(amount)
         else:
             raise ValueError("Số lần giao dịch là số nguyên dương!")
