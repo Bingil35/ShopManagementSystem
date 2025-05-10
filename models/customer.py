@@ -29,5 +29,14 @@ class Customer(ABC):
     def get_type(self):
         pass
     
-    def __str__(self):
-        return f"ID: {self.customer_id}| Name: {self.name}| Phone: {self.phone}| Email: {self.email}| Type: {self.get_type()}"
+    def to_dict(self):
+        return {
+            "ID": self.customer_id,
+            "Họ và tên": self.name,
+            "Số điện thoại": self.phone,
+            "Email": self.email,
+            "Loại": self.get_type(),
+            "Tổng tiền": self.total_spent(),
+            "Purchases": self.purchase_count(),
+            "Trung bình": round(self.average_spent(), 2)
+        }

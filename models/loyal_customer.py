@@ -18,6 +18,6 @@ class LoyalCustomer(Customer):
         #     raise ValueError("Invalid number of loyalty points to redeem")
 
     def get_type(self):
-        return "Loyal"
+        return "Thân thiết"
     def __str__(self):
-        return f"{super().__str__()}| Loyalty Points: {self.loyalty_points}| Type: {self.get_type()}"
+        return f"{super().__str__()}| Điểm thành viên: {self.loyalty_points}| Loại khách hàng: {self.get_type()}"
