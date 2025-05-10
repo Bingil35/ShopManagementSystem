@@ -1,341 +1,138 @@
-from models.customer import Customer # ABC, not directly instantiated
-from models.loyal_customer import LoyalCustomer
-from models.casual_customer import CasualCustomer
-from templates import display # Import the display module
+from models.manage_customer import ManageCustomer, CasualCustomer # For type hints if needed
+from templates import display
 
-class ShopView:
-    PROMOTION_THRESHOLD = 2000000.0 # 2 triệu VND
+def get_string_input(prompt, allow_empty=False):
+    while True:
+        value = input(prompt).strip()
+        if value or allow_empty:
+            return value
+        display.display_message("Input cannot be empty.", is_error=True)
 
-    def __init__(self):
-        self.customers = [] # List to store customer objects
+def get_id_input(prompt="Enter Customer ID: "):
+    return get_string_input(prompt)
 
-    def _find_customer_by_id(self, customer_id):
-        """Finds a customer by ID and returns the customer object and its index."""
-        for i, customer in enumerate(self.customers):
-            if customer.customer_id == customer_id:
-                return customer, i
-        return None, -1
-
-    def _check_and_promote_customer(self, customer_index):
-        """Checks if a CasualCustomer should be promoted to LoyalCustomer."""
-        customer = self.customers[customer_index]
-        if isinstance(customer, CasualCustomer) and customer.total_spent() > self.PROMOTION_THRESHOLD:
-            display.display_message(f"Khách hàng {customer.name} ({customer.customer_id}) "
-                                    f"với tổng chi tiêu {customer.total_spent():,.0f} VND đủ điều kiện nâng cấp.")
-            # Create a new LoyalCustomer, preserving data
-            promoted_customer = LoyalCustomer(
-                customer_id=customer.customer_id,
-                name=customer.name,
-                phone=customer.phone,
-                email=customer.email
-            )
-            # Transfer purchase history
-            for purchase in customer.purchase_history:
-                promoted_customer.add_purchase(purchase)
-            # Assuming new loyal customers start with 0 points unless earned
-            # promoted_customer.add_loyalty_points(0) # or some initial points
-
-            self.customers[customer_index] = promoted_customer
-            display.display_message(f"Đã nâng cấp khách hàng {promoted_customer.name} thành Khách hàng thân thiết.")
-            return True
-        return False
-
-    def add_customer(self):
-        """Adds a new customer to the system."""
-        display.display_message("--- Thêm khách hàng mới ---")
-        customer_id, name, phone, email = display.get_customer_base_info()
-
-        # Check for duplicate ID
-        existing_customer, _ = self._find_customer_by_id(customer_id)
-        if existing_customer:
-            display.display_message(f"Mã khách hàng '{customer_id}' đã tồn tại.", True)
-            return
-
-        while True:
-            type_choice = input("Loại khách hàng (1: Thân thiết, 2: Vãng lai, mặc định là Vãng lai): ").strip()
-            if type_choice == '1':
-                customer = LoyalCustomer(customer_id, name, phone, email)
-                # Optionally ask for initial loyalty points
-                points_to_add = display.get_loyalty_points_to_add_or_redeem("thêm ban đầu")
-                if points_to_add is not None:
-                    customer.add_loyalty_points(points_to_add)
-                break
-            elif type_choice == '2' or not type_choice: # Default to Casual
-                customer = CasualCustomer(customer_id, name, phone, email)
-                break
+def get_float_input(prompt):
+    while True:
+        try:
+            value = float(input(prompt))
+            if value > 0:
+                return value
             else:
-                display.display_message("Lựa chọn không hợp lệ. Vui lòng chọn 1 hoặc 2.", True)
+                display.display_message("Amount must be positive.", is_error=True)
+        except ValueError:
+            display.display_message("Invalid input. Please enter a number.", is_error=True)
 
-        self.customers.append(customer)
-        display.display_message(f"Đã thêm khách hàng '{name}' ({customer.get_type()}) thành công.")
-        # For CasualCustomer, initial total_spent is 0, so no immediate promotion.
-        # Promotion happens after adding purchases.
-
-    def add_purchase_to_customer(self):
-        """Adds a purchase transaction for a customer."""
-        display.display_message("--- Thêm giao dịch mua hàng ---")
-        customer_id = input("Nhập Mã khách hàng để thêm giao dịch: ").strip()
-        customer, index = self._find_customer_by_id(customer_id)
-
-        if not customer:
-            display.display_message(f"Không tìm thấy khách hàng với mã '{customer_id}'.", True)
-            return
-
-        amount = display.get_purchase_amount()
-        customer.add_purchase(amount)
-        display.display_message(f"Đã thêm giao dịch {amount:,.0f} VND cho khách hàng {customer.name}.")
-
-        # Optional: Award loyalty points for LoyalCustomers after purchase
-        if isinstance(customer, LoyalCustomer):
-            # Example: 1 point for every 100,000 VND spent in this transaction
-            points_earned = int(amount // 100000)
-            if points_earned > 0:
-                customer.add_loyalty_points(points_earned)
-                display.display_message(f"Khách hàng {customer.name} được cộng {points_earned} điểm tích lũy.")
-
-        # Check for promotion if CasualCustomer
-        if isinstance(customer, CasualCustomer):
-            self._check_and_promote_customer(index)
-
-
-    def edit_customer_info(self):
-        """Edits an existing customer's information."""
-        display.display_message("--- Sửa thông tin khách hàng ---")
-        customer_id_to_edit = input("Nhập Mã khách hàng cần sửa: ").strip()
-        customer, index = self._find_customer_by_id(customer_id_to_edit)
-
-        if not customer:
-            display.display_message(f"Không tìm thấy khách hàng với mã '{customer_id_to_edit}'.", True)
-            return
-
-        display.display_message("Thông tin hiện tại của khách hàng:")
-        display.display_customer_details(customer)
-
-        _, name, phone, email = display.get_customer_base_info(is_update=True, existing_customer=customer)
-        
-        customer.name = name
-        customer.phone = phone
-        customer.email = email
-
-        if isinstance(customer, LoyalCustomer):
-            action_choice = input("Bạn có muốn (1) Thêm điểm, (2) Trừ điểm tích lũy không? (bỏ trống nếu không): ").strip()
-            if action_choice == '1':
-                points = display.get_loyalty_points_to_add_or_redeem("thêm")
-                if points: customer.add_loyalty_points(points)
-            elif action_choice == '2':
-                points = display.get_loyalty_points_to_add_or_redeem("trừ")
-                if points:
-                    try:
-                        customer.redeem_loyalty_points(points)
-                    except ValueError as e: # Assuming redeem_loyalty_points might raise ValueError
-                        display.display_message(str(e), True)
-
-
-        display.display_message(f"Đã cập nhật thông tin cho khách hàng '{customer_id_to_edit}'.")
-        # Note: Editing basic info doesn't trigger promotion check.
-        # Promotion is tied to `total_spent` which changes via `add_purchase_to_customer`.
-
-    def delete_customer(self):
-        """Deletes a customer from the system."""
-        display.display_message("--- Xoá khách hàng ---")
-        customer_id = input("Nhập Mã khách hàng cần xoá: ").strip()
-        customer, index = self._find_customer_by_id(customer_id)
-
-        if not customer:
-            display.display_message(f"Không tìm thấy khách hàng với mã '{customer_id}'.", True)
-            return
-
-        confirm = input(f"Bạn có chắc chắn muốn xoá khách hàng {customer.name} (Mã: {customer_id})? (y/n): ").strip().lower()
-        if confirm == 'y':
-            del self.customers[index]
-            display.display_message(f"Đã xoá khách hàng '{customer_id}'.")
-        else:
-            display.display_message("Hủy thao tác xoá.")
-
-    def search_customers(self):
-        """Searches for customers by ID or Name."""
-        display.display_message("--- Tìm kiếm khách hàng ---")
-        if not self.customers:
-            display.display_message("Chưa có khách hàng nào trong hệ thống.")
-            return
-
-        keyword = input("Nhập từ khoá tìm kiếm (Mã KH hoặc Tên KH): ").strip().lower()
-        if not keyword:
-            display.display_message("Vui lòng nhập từ khoá.", True)
-            return
-
-        results = [
-            customer for customer in self.customers
-            if keyword in customer.customer_id.lower() or keyword in customer.name.lower()
-        ]
-
-        if results:
-            display.display_customer_list(results, f"Kết quả tìm kiếm cho '{keyword}'")
-        else:
-            display.display_message(f"Không tìm thấy khách hàng nào phù hợp với từ khoá '{keyword}'.")
-
-    def display_all_customers_by_type(self):
-        """Displays all customers, categorized by type."""
-        display.display_message("\n--- Danh sách khách hàng ---")
-        if not self.customers:
-            display.display_message("Chưa có khách hàng nào trong hệ thống.")
-            return
-
-        loyal_customers = [c for c in self.customers if isinstance(c, LoyalCustomer)]
-        casual_customers = [c for c in self.customers if isinstance(c, CasualCustomer)]
-
-        if loyal_customers:
-            display.display_customer_list(loyal_customers, "Khách hàng thân thiết")
-        else:
-            display.display_message("Không có khách hàng thân thiết nào.")
-
-        if casual_customers:
-            display.display_customer_list(casual_customers, "Khách hàng vãng lai")
-        else:
-            display.display_message("Không có khách hàng vãng lai nào.")
-
-    def calculate_and_display_revenue(self):
-        """Calculates and displays total revenue and revenue by customer type."""
-        if not self.customers:
-            display.display_message("Chưa có dữ liệu khách hàng để tính doanh thu.", True)
-            return
-
-        total_revenue_all = sum(c.total_spent() for c in self.customers)
-        
-        loyal_customers = [c for c in self.customers if isinstance(c, LoyalCustomer)]
-        casual_customers = [c for c in self.customers if isinstance(c, CasualCustomer)]
-
-        total_revenue_loyal = sum(c.total_spent() for c in loyal_customers)
-        total_revenue_casual = sum(c.total_spent() for c in casual_customers)
-        
-        avg_spent_loyal_type = (total_revenue_loyal / len(loyal_customers)) if loyal_customers else 0
-        avg_spent_casual_type = (total_revenue_casual / len(casual_customers)) if casual_customers else 0
-        
-        display.display_revenue_report(total_revenue_all, total_revenue_loyal, total_revenue_casual,
-                                       avg_spent_loyal_type, avg_spent_casual_type)
-        
-        # Yêu cầu cũng có "Tính trung bình giá trị mua hàng của từng khách hàng"
-        # This is already part of display_customer_details which is used by display_customer_list
-        print("\n--- Chi tiêu trung bình của từng khách hàng ---")
-        if self.customers:
-            for cust in self.customers:
-                print(f"  {cust.name} (Mã: {cust.customer_id}): {cust.average_spent():,.2f} VND/lần mua")
-        else:
-            print("  Không có khách hàng nào.")
-        print("-" * 20)
-
-
-    def display_top_3_spenders(self):
-        """Displays the top 3 customers by total spending."""
-        if not self.customers:
-            display.display_message("Chưa có khách hàng nào trong hệ thống.", True)
-            return
-
-        # Sort customers by total_spent in descending order
-        sorted_customers = sorted(self.customers, key=lambda c: c.total_spent(), reverse=True)
-        display.display_top_spenders(sorted_customers[:3])
-
-
-    def display_tet_gift_candidates(self):
-        """Displays LoyalCustomers eligible for Tet gifts."""
-        if not self.customers:
-            display.display_message("Chưa có khách hàng nào trong hệ thống.", True)
-            return
-
-        # 1. Filter LoyalCustomers with loyalty_points > 500
-        eligible_by_points = [
-            lc for lc in self.customers
-            if isinstance(lc, LoyalCustomer) and lc.loyalty_points > 500
-        ]
-
-        if not eligible_by_points:
-            display.display_message("Không có Khách hàng thân thiết nào có > 500 điểm tích lũy.")
-            return
-
-        # 2. Get top 10 customers by average_spent() from ALL customers
-        all_customers_sorted_by_avg_spent = sorted(
-            self.customers,
-            key=lambda c: c.average_spent(),
-            reverse=True
-        )
-        top_10_avg_spenders_ids = {c.customer_id for c in all_customers_sorted_by_avg_spent[:10]}
-
-        if not top_10_avg_spenders_ids:
-            display.display_message("Không có đủ dữ liệu khách hàng để xác định top 10 theo chi tiêu trung bình.")
-            return
-            
-        # 3. Find the intersection: LoyalCustomers who are in eligible_by_points AND in top_10_avg_spenders_ids
-        final_candidates = [
-            lc for lc in eligible_by_points if lc.customer_id in top_10_avg_spenders_ids
-        ]
-        display.display_tet_gift_candidates(final_candidates)
-
-    def run(self):
-        """Main loop for the application."""
-        # Sample Data (Optional - for quick testing)
-        # c1 = LoyalCustomer("TT001", "Nguyen Van A", "0901234567", "a@test.com")
-        # c1.add_purchase(1000000)
-        # c1.add_purchase(1500000) # Total 2.5M, Avg 1.25M
-        # c1.add_loyalty_points(600)
-        # self.customers.append(c1)
-
-        # c2 = CasualCustomer("VL001", "Tran Thi B", "0912223333", "b@test.com")
-        # c2.add_purchase(500000) # Total 0.5M
-        # self.customers.append(c2)
-
-        # c3 = CasualCustomer("VL002", "Le Van C", "0923334444", "c@test.com")
-        # c3.add_purchase(1000000)
-        # c3.add_purchase(1200000) # Total 2.2M -> should promote
-        # self.customers.append(c3)
-        # # Manually trigger check for sample data if added like this
-        # for i, cust in enumerate(self.customers):
-        #     if cust.customer_id == "VL002":
-        #         self._check_and_promote_customer(i)
-        #         break
-        
-        # c4 = LoyalCustomer("TT002", "Pham Thi D", "0987654321", "d@test.com")
-        # c4.add_purchase(3000000) # Total 3M, Avg 3M
-        # c4.add_loyalty_points(400)
-        # self.customers.append(c4)
-
-        # c5 = LoyalCustomer("TT003", "Hoang Van E", "0911111111", "e@test.com")
-        # c5.add_purchase(2000000) # Total 2M, Avg 2M
-        # c5.add_loyalty_points(550)
-        # self.customers.append(c5)
-
-
-        while True:
-            display.display_main_menu()
-            choice = display.get_user_choice()
-
-            if choice == '1':
-                self.add_customer()
-            elif choice == '2':
-                self.edit_customer_info()
-            elif choice == '3':
-                self.delete_customer()
-            elif choice == '4':
-                self.search_customers()
-            elif choice == '5':
-                self.display_all_customers_by_type()
-            elif choice == '6':
-                self.calculate_and_display_revenue()
-            elif choice == '7':
-                self.display_top_3_spenders()
-            elif choice == '8':
-                self.display_tet_gift_candidates()
-            elif choice == '9':
-                self.add_purchase_to_customer()
-            elif choice == '0':
-                display.display_message("Đã thoát chương trình. Tạm biệt!")
-                break
+def get_int_input(prompt, min_val=None, max_val=None):
+    while True:
+        try:
+            value = int(input(prompt))
+            if (min_val is None or value >= min_val) and \
+               (max_val is None or value <= max_val):
+                return value
             else:
-                display.display_message("Lựa chọn không hợp lệ. Vui lòng thử lại.", True)
-            
-            if choice != '0': # Don't pause if exiting
-                input("\nNhấn Enter để tiếp tục...")
+                display.display_message(f"Input must be between {min_val} and {max_val}.", is_error=True)
+        except ValueError:
+            display.display_message("Invalid input. Please enter an integer.", is_error=True)
 
 
-if __name__ == "__main__":
-    app_view = ShopView()
-    app_view.run()
+def get_customer_details_from_user():
+    customer_id = get_id_input("Enter Customer ID: ")
+    name = get_string_input("Enter Customer Name: ")
+    phone = get_string_input("Enter Customer Phone: ")
+    email = get_string_input("Enter Customer Email: ")
+    return customer_id, name, phone, email
+
+# --- Action Functions ---
+
+def add_new_customer_view(manager: ManageCustomer):
+    display.display_message("--- Add New Customer ---")
+    customer_id, name, phone, email = get_customer_details_from_user()
+    if manager.add_customer(customer_id, name, phone, email):
+        # display.display_message(f"Customer {name} added successfully.") # Manager method already prints
+        pass
+    # else:
+        # display.display_message(f"Failed to add customer.", is_error=True) # Manager method already prints
+
+def add_purchase_view(manager: ManageCustomer):
+    display.display_message("--- Add Purchase to Customer ---")
+    customer_id = get_id_input("Enter Customer ID to add purchase to: ")
+    amount = get_float_input("Enter purchase amount: ")
+    manager.add_purchase_to_customer(customer_id, amount)
+
+def update_customer_view(manager: ManageCustomer):
+    display.display_message("--- Update Customer Information ---")
+    customer_id = get_id_input("Enter Customer ID to update: ")
+    
+    customer_index = manager._find_customer_index(customer_id)
+    if customer_index == -1:
+        display.display_message(f"Customer with ID {customer_id} not found.", is_error=True)
+        return
+
+    customer = manager.customers[customer_index]
+    display.display_message(f"Current details: {str(customer)}")
+
+    new_name = get_string_input(f"Enter new name (current: {customer.name}) or press Enter to keep: ", allow_empty=True)
+    new_phone = get_string_input(f"Enter new phone (current: {customer.phone}) or press Enter to keep: ", allow_empty=True)
+    new_email = get_string_input(f"Enter new email (current: {customer.email}) or press Enter to keep: ", allow_empty=True)
+    
+    updated_something = False
+    _new_name = new_name if new_name else None
+    _new_phone = new_phone if new_phone else None
+    _new_email = new_email if new_email else None
+
+    if _new_name or _new_phone or _new_email:
+        manager.update_customer_info(customer_id, _new_name, _new_phone, _new_email)
+        updated_something = True
+    
+    if not updated_something:
+        display.display_message("No changes made.")
+
+
+def delete_customer_view(manager: ManageCustomer):
+    display.display_message("--- Delete Customer ---")
+    customer_id = get_id_input("Enter Customer ID to delete: ")
+    manager.delete_customer(customer_id)
+
+def search_customer_view(manager: ManageCustomer):
+    display.display_message("--- Search Customer ---")
+    keyword = get_string_input("Enter search keyword (ID, Name, or Phone): ")
+    results = manager.search_customer(keyword)
+    display.display_customer_list(results, f"Search Results for '{keyword}'")
+
+def list_all_customers_view(manager: ManageCustomer):
+    display.display_customer_list(manager.get_all_customers(), "All Customers")
+
+def list_customers_by_type_view(manager: ManageCustomer):
+    display.display_message("--- List Customers by Type ---")
+    type_choice = get_string_input("Enter customer type (Casual/Loyal): ").capitalize()
+    if type_choice not in ["Casual", "Loyal"]:
+        display.display_message("Invalid type. Please enter 'Casual' or 'Loyal'.", is_error=True)
+        return
+    customers = manager.list_customers_by_type(type_choice)
+    display.display_customer_list(customers, f"{type_choice} Customers")
+
+def display_revenue_reports_view(manager: ManageCustomer):
+    display.display_revenue_report(manager)
+
+def display_top_customers_view(manager: ManageCustomer):
+    n = 3 # As per requirement "3 khách hàng mua nhiều nhất"
+    top_customers = manager.report_top_customers(n)
+    display.display_top_customers(top_customers, n)
+    
+    # Additional: Hiển thị 3 khách hàng mua hàng nhiều nhất (sắp xếp danh sách theo giá trị mua hàng giảm dần).
+    # This is essentially the same as report_top_customers.
+    # If it means 'most purchase count', we'd need another sorting key.
+    # The term "giá trị mua hàng" strongly suggests total_spent.
+    sorted_by_spent_desc = manager.sort_by_total_spent(reverse=True)
+    display.display_customer_list(sorted_by_spent_desc, "Customers Sorted by Total Spent (Descending)")
+
+
+def display_tet_promotion_view(manager: ManageCustomer):
+    candidates = manager.get_tet_promotion_candidates()
+    display.display_tet_promotion_list(candidates)
+
+def add_loyalty_points_view(manager: ManageCustomer):
+    display.display_message("--- Add Loyalty Points ---")
+    customer_id = get_id_input("Enter Loyal Customer ID: ")
+    points = get_int_input("Enter loyalty points to add: ", min_val=1)
+    manager.add_loyalty_points_to_customer(customer_id, points)
