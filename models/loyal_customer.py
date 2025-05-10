@@ -19,5 +19,3 @@ class LoyalCustomer(Customer):
 
     def get_type(self):
         return "Thân thiết"
-    def __str__(self):
-        return f"{super().__str__()}| Điểm thành viên: {self.loyalty_points}| Loại khách hàng: {self.get_type()}"

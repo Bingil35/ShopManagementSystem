@@ -6,6 +6,3 @@ class CasualCustomer(Customer):
     
     def get_type(self):
         return "Vãng lai"
-    
-    def __str__(self):
-        return f"{super().__str__()}| Loại khách hàng: {self.get_type()}"

@@ -11,8 +11,8 @@ class Customer(ABC):
     def add_purchase(self, amount):
         if amount > 0:
             self.purchase_history.append(amount)
-        # else:
-        #     raise ValueError("Purchase amount must be positive")
+        else:
+            raise ValueError("Số lần giao dịch là số nguyên dương!")
     
     def total_spent(self):
         return sum(self.purchase_history)
@@ -32,11 +32,11 @@ class Customer(ABC):
     def to_dict(self):
         return {
             "ID": self.customer_id,
-            "Họ và tên": self.name,
-            "Số điện thoại": self.phone,
+            "Tên": self.name,
+            "SĐT": self.phone,
             "Email": self.email,
             "Loại": self.get_type(),
-            "Tổng tiền": self.total_spent(),
-            "Purchases": self.purchase_count(),
-            "Trung bình": round(self.average_spent(), 2)
+            "Tổng giao dịch": self.total_spent(),
+            "Số lần giao dịch": self.purchase_count(),
+            "Trung bình giao dịch": round(self.average_spent(), 2)
         }
