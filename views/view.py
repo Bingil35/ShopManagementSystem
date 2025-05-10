@@ -1,5 +1,28 @@
+import re
 from models.manage_customer import ManageCustomer, CasualCustomer # For type hints if needed
 from templates import display
+
+def get_name_input(prompt="Nhập tên khách hàng: "):
+    while True:
+        value = input(prompt).strip()
+        if re.fullmatch(r"[A-Za-zÀ-Ỹà-ỹ\s]+", value):  # Cho phép cả tiếng Việt có dấu và dấu cách
+            return value
+        display.display_message("Tên chỉ được chứa chữ cái và khoảng trắng.", is_error=True)
+
+def get_phone_input(prompt="Nhập số điện thoại: "):
+    while True:
+        value = get_string_input(prompt)
+        if value.isdigit() and (9 <= len(value) <= 11):
+            return value
+        display.display_message("Số điện thoại phải là số và từ 9 đến 11 chữ số.", is_error=True)
+
+def get_email_input(prompt="Nhập email: "):
+    while True:
+        value = get_string_input(prompt)
+        if re.fullmatch(r"[^@]+@[^@]+\.[^@]+", value):
+            return value
+        display.display_message("Email không hợp lệ. Vui lòng nhập đúng định dạng (ví dụ: ten@example.com).", is_error=True)
+
 
 def get_string_input(prompt, allow_empty=False):
     while True:
@@ -37,9 +60,9 @@ def get_int_input(prompt, min_val=None, max_val=None):
 
 def get_customer_details_from_user():
     customer_id = get_id_input("Nhập mã khách hàng: ")
-    name = get_string_input("Nhập tên khách hàng: ")
-    phone = get_string_input("Nhập số điện thoại: ")
-    email = get_string_input("Nhập email: ")
+    name = get_name_input("Nhập tên khách hàng: ")
+    phone = get_phone_input("Nhập số điện thoại: ")
+    email = get_email_input("Nhập email: ")
     return customer_id, name, phone, email
 
 # --- Các hàm xử lý hành động ---
@@ -119,14 +142,6 @@ def display_top_customers_view(manager: ManageCustomer):
     n = 3 # Hiển thị 3 khách hàng mua nhiều nhất
     top_customers = manager.report_top_customers(n)
     display.display_top_customers(top_customers, n)
-    
-    # Additional: Hiển thị 3 khách hàng mua hàng nhiều nhất (sắp xếp danh sách theo giá trị mua hàng giảm dần).
-    # This is essentially the same as report_top_customers.
-    # If it means 'most purchase count', we'd need another sorting key.
-    # The term "giá trị mua hàng" strongly suggests total_spent.
-    sorted_by_spent_desc = manager.sort_by_total_spent(reverse=True)
-    display.display_customer_list(sorted_by_spent_desc, "Khách hàng theo tổng chi tiêu (giảm dần)")
-
 
 def display_tet_promotion_view(manager: ManageCustomer):
     candidates = manager.get_tet_promotion_candidates()
