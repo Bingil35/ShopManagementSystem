@@ -9,24 +9,24 @@ def main():
     customer_manager.load_data(DATA_FILE) # Load data at startup
 
     menu_options = [
-        "Add New Customer",
-        "Add Purchase to Customer",
-        "Update Customer Information",
-        "Delete Customer",
-        "Search Customer",
-        "List All Customers",
-        "List Customers by Type (Casual/Loyal)",
-        "Display Revenue Reports",
-        "Display Top 3 Customers (by total spent)",
-        "Display Customers Sorted by Total Spent (Descending)", # Added based on YC3
-        "Display Tet Promotion Candidates",
-        "Add Loyalty Points to Loyal Customer" # Added for YC1 LoyalCustomer
+        "Thêm khách hàng mới",
+        "Thêm đơn hàng cho khách hàng",
+        "Cập nhật thông tin khách hàng",
+        "Xoá khách hàng",
+        "Tìm kiếm khách hàng",
+        "Hiển thị tất cả khách hàng",
+        "Liệt kê khách hàng theo loại (Vãng lai/Thân thiết)",
+        "Hiển thị báo cáo doanh thu",
+        "Hiển thị 3 khách hàng chi tiêu nhiều nhất",
+        "Hiển thị danh sách khách hàng theo tổng chi tiêu (giảm dần)", # Added based on YC3
+        "Hiển thị khách hàng đủ điều kiện khuyến mãi Tết",
+        "Thêm điểm tích lũy cho khách hàng thân thiết" # Added for YC1 LoyalCustomer
     ]
 
     while True:
         display.display_menu(menu_options)
         try:
-            choice = view.get_int_input("Enter your choice (0-12): ", 0, len(menu_options))
+            choice = view.get_int_input("Nhập lựa chọn của bạn (0-12): ", 0, len(menu_options))
 
             if choice == 1:
                 view.add_new_customer_view(customer_manager)
@@ -48,25 +48,25 @@ def main():
                 view.display_top_customers_view(customer_manager)
             elif choice == 10: # Display Customers Sorted by Total Spent
                 all_customers_sorted = customer_manager.sort_by_total_spent(reverse=True)
-                display.display_customer_list(all_customers_sorted, "Customers Sorted by Total Spent (Descending)")
+                display.display_customer_list(all_customers_sorted, "Khách hàng theo tổng chi tiêu (giảm dần)")
             elif choice == 11:
                 view.display_tet_promotion_view(customer_manager)
             elif choice == 12:
                 view.add_loyalty_points_view(customer_manager)
             elif choice == 0:
                 customer_manager.save_data(DATA_FILE) # Save data on exit
-                display.display_message("Exiting program. Goodbye!")
+                display.display_message("Đang thoát chương trình. Tạm biệt!")
                 break
             else:
-                display.display_message("Invalid choice. Please try again.", is_error=True)
+                display.display_message("Lựa chọn không hợp lệ. Vui lòng thử lại.", is_error=True)
             
             # Optionally save after every significant operation
             # customer_manager.save_data(DATA_FILE) 
 
         except ValueError:
-            display.display_message("Invalid input. Please enter a number for choice.", is_error=True)
+            display.display_message("Dữ liệu không hợp lệ. Vui lòng nhập một số.", is_error=True)
         except Exception as e:
-            display.display_message(f"An unexpected error occurred: {e}", is_error=True)
+            display.display_message(f"Đã xảy ra lỗi: {e}", is_error=True)
 
 if __name__ == "__main__":
     main()

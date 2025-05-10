@@ -1,12 +1,12 @@
 def display_customer(customer):
-    """Displays a single customer's details."""
+    """Hiển thị thông tin khách hàng."""
     print(str(customer))
 
-def display_customer_list(customers, title="Customer List"):
-    """Displays a list of customers."""
+def display_customer_list(customers, title="Danh sách khách hàng"):
+    """Hiển thị danh sách khách hàng."""
     print(f"\n--- {title} ---")
     if not customers:
-        print("No customers found.")
+        print("Không tìm thấy khách hàng.")
         return
     for i, customer in enumerate(customers):
         print(f"{i+1}. {str(customer)}")
@@ -14,51 +14,51 @@ def display_customer_list(customers, title="Customer List"):
 
 def display_menu(options):
     """
-    Displays a menu with numbered options.
-    options: A list of strings, where each string is a menu item.
+    Hiển thị menu với các lựa chọn được đánh số.
+    
     """
-    print("\n===== SHOP MANAGEMENT MENU =====")
+    print("\n===== MENU QUẢN LÝ CỬA HÀNG =====")
     for i, option in enumerate(options):
         print(f"{i+1}. {option}")
-    print("0. Exit")
+    print("0. Thoát")
     print("==============================")
 
 def display_message(message, is_error=False):
-    """Displays a generic message or an error message."""
-    prefix = "INFO: "
+    """Hiển thị thông báo chung hoặc thông báo lỗi."""
+    prefix = "THÔNG BÁO: "
     if is_error:
-        prefix = "ERROR: "
+        prefix = "LỖI: "
     print(f"{prefix}{message}")
 
 def display_revenue_report(manager):
-    """Displays various revenue statistics."""
-    print("\n--- Revenue Report ---")
-    print(f"Total Revenue (All Customers): {manager.report_total_revenue():,.0f} VND")
-    print(f"Average Spending per Customer (All): {manager.report_average_spending_per_customer():,.0f} VND")
+    """Hiển thị báo cáo doanh thu."""
+    print("\n--- Báo cáo doanh thu ---")
+    print(f"Tổng doanh thu (Tất cả khách hàng): {manager.report_total_revenue():,.0f} VND")
+    print(f"Chi tiêu trung bình mỗi khách hàng: {manager.report_average_spending_per_customer():,.0f} VND")
     
-    print(f"\nTotal Revenue (Loyal Customers): {manager.report_total_revenue_by_type('Loyal'):,.0f} VND")
-    print(f"Average Spending (Loyal Customers): {manager.report_average_spending_by_type('Loyal'):,.0f} VND")
+    print(f"\nTổng doanh thu (Khách hàng thân thiết): {manager.report_total_revenue_by_type('Loyal'):,.0f} VND")
+    print(f"Chi tiêu trung bình (Khách hàng thân thiết): {manager.report_average_spending_by_type('Loyal'):,.0f} VND")
 
-    print(f"\nTotal Revenue (Casual Customers): {manager.report_total_revenue_by_type('Casual'):,.0f} VND")
-    print(f"Average Spending (Casual Customers): {manager.report_average_spending_by_type('Casual'):,.0f} VND")
+    print(f"\nTổng doanh thu (Khách hàng vãng lai): {manager.report_total_revenue_by_type('Casual'):,.0f} VND")
+    print(f"Chi tiêu trung bình (Khách hàng vãng lai): {manager.report_average_spending_by_type('Casual'):,.0f} VND")
     print("----------------------")
 
 def display_top_customers(customers, count):
-    """Displays top N customers."""
-    title = f"Top {count} Customers by Total Spent"
+    """Hiển thị top N khách hàng theo tổng chi tiêu."""
+    title = f"Top {count} khách hàng chi tiêu nhiều nhất"
     display_customer_list(customers, title)
 
 def display_tet_promotion_list(customers):
-    """Displays customers eligible for Tet promotion."""
-    title = "Tet Promotion Candidates (Loyal > 500 points, sorted by Avg. Purchase)"
+    """Hiển thị danh sách khách hàng đủ điều kiện khuyến mãi Tết."""
+    title = "Ứng viên khuyến mãi Tết (Thân thiết > 500 điểm, sắp xếp theo chi tiêu trung bình)"
     if not customers:
         print(f"\n--- {title} ---")
-        print("No customers eligible for Tet promotion.")
+        print("Không có khách hàng nào đủ điều kiện khuyến mãi Tết.")
         print("--------------------")
         return
     
     print(f"\n--- {title} ---")
     for i, customer in enumerate(customers):
-        print(f"{i+1}. ID: {customer.customer_id}, Name: {customer.name}, "
-              f"Loyalty Points: {customer.loyalty_points}, Avg. Spent: {customer.average_spent():,.0f} VND")
+        print(f"{i+1}. Mã KH: {customer.customer_id}, Tên: {customer.name}, "
+              f"Điểm tích lũy: {customer.loyalty_points}, Chi tiêu TB: {customer.average_spent():,.0f} VND")
     print("--------------------")
