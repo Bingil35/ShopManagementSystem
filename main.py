@@ -24,7 +24,7 @@ def main():
     manager = CustomerManager()
 
     if os.path.exists("data/customer_info.json"):
-        manager.load_from_file("data/customer_info.json")
+        manager.load_from_file("./data/customer_info.json")
 
     while True:
         menu()
@@ -106,7 +106,7 @@ def main():
             manager.display_gift_customers()
 
         elif choice == "0":
-            manager.save_to_file("data/customer_info.json")
+            manager.save_to_file("./data/customer_info.json")
             print("Đã lưu và thoát chương trình.")
             break
 

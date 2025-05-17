@@ -16,6 +16,8 @@ def load_customers(filename="./data/customer_info.json"):
         with open(filename, "r", encoding="utf-8") as f:
             data = json.load(f)
             for item in data:
+                
+                
                 customer_type = item.get("Loại")
                 if customer_type == "Thân thiết":
                     customer = LoyalCustomer(item["ID"], item["Tên"], item["SĐT"], item["Email"])
@@ -139,7 +141,7 @@ class CustomerManager:
         if not upgraded:
             print("Không có khách hàng nào có thể nâng lên khách hàng thân thiết.")
         else:
-            self.save_customer_info()
+            self.save_to_file()
 
 
     def search_customer(self, keyword, filename="./data/customer_info.json"):

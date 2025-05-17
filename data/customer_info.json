@@ -1,10 +1,112 @@
-{
-    "ID": "10",
-    "Tên": "Trần Văn J",
-    "SĐT": "0123456789",
-    "Email": "j@example.com",
-    "Loại": "Thân thiết",
-    "Tổng giao dịch": 7000000,
-    "Số lần giao dịch": 2,
-    "Trung bình giao dịch": 3500000.0
-}
+[
+    {
+        "ID": "01",
+        "Tên": "Nguyễn Văn Bình",
+        "SĐT": "0987654321",
+        "Email": "nguyenvanbinh@gmail.com",
+        "Loại": "Thân thiết",
+        "Tổng giao dịch": 2000000.0,
+        "Số lần giao dịch": 1,
+        "Trung bình giao dịch": 2000000.0
+    },
+    {
+        "ID": "02",
+        "Tên": "Nguyễn Quốc Việt",
+        "SĐT": "0987655678",
+        "Email": "nguyenquocviet@gmail.com",
+        "Loại": "Vãng lai",
+        "Tổng giao dịch": 250000.0,
+        "Số lần giao dịch": 1,
+        "Trung bình giao dịch": 250000.0
+    },
+    {
+        "ID": "03",
+        "Tên": "Ninh Khánh Xuân",
+        "SĐT": "0887766554",
+        "Email": "ninhkhanhxuan@gmail.com",
+        "Loại": "Thân thiết",
+        "Tổng giao dịch": 98700023.0,
+        "Số lần giao dịch": 1,
+        "Trung bình giao dịch": 98700023.0
+    },
+    {
+        "ID": "04",
+        "Tên": "Lê Thái Dương",
+        "SĐT": "0987654332",
+        "Email": "lethaiduong@gmail.com",
+        "Loại": "Thân thiết",
+        "Tổng giao dịch": 3500000.0,
+        "Số lần giao dịch": 1,
+        "Trung bình giao dịch": 3500000.0
+    },
+    {
+        "ID": "06",
+        "Tên": "Phạm Thị Hoa",
+        "SĐT": "0912233445",
+        "Email": "phamthihua@example.com",
+        "Loại": "Thân thiết",
+        "Tổng giao dịch": 4200000.0,
+        "Số lần giao dịch": 4,
+        "Trung bình giao dịch": 1050000.0
+    },
+    {
+        "ID": "07",
+        "Tên": "Trần Đức Anh",
+        "SĐT": "0923344556",
+        "Email": "tranducanh@example.com",
+        "Loại": "Vãng lai",
+        "Tổng giao dịch": 500000.0,
+        "Số lần giao dịch": 1,
+        "Trung bình giao dịch": 500000.0
+    },
+    {
+        "ID": "08",
+        "Tên": "Nguyễn Minh Tuấn",
+        "SĐT": "0933555777",
+        "Email": "nguyenminhtuan@example.com",
+        "Loại": "Thân thiết",
+        "Tổng giao dịch": 300000000.0,
+        "Số lần giao dịch": 600,
+        "Trung bình giao dịch": 500000.0
+    },
+    {
+        "ID": "09",
+        "Tên": "Lê Thị Hương",
+        "SĐT": "0944666888",
+        "Email": "lethihuong@example.com",
+        "Loại": "Thân thiết",
+        "Tổng giao dịch": 275000000.0,
+        "Số lần giao dịch": 550,
+        "Trung bình giao dịch": 500000.0
+    },
+    {
+        "ID": "10",
+        "Tên": "Trần Văn Long",
+        "SĐT": "0955777999",
+        "Email": "tranvanlong@example.com",
+        "Loại": "Thân thiết",
+        "Tổng giao dịch": 310000000.0,
+        "Số lần giao dịch": 620,
+        "Trung bình giao dịch": 500000.0
+    },
+    {
+        "ID": "11",
+        "Tên": "Phạm Thị Mai",
+        "SĐT": "0966888111",
+        "Email": "phamthimai@example.com",
+        "Loại": "Thân thiết",
+        "Tổng giao dịch": 260000000.0,
+        "Số lần giao dịch": 520,
+        "Trung bình giao dịch": 500000.0
+    },
+    {
+        "ID": "12",
+        "Tên": "Đỗ Đức Hải",
+        "SĐT": "0977999222",
+        "Email": "doduchai@example.com",
+        "Loại": "Thân thiết",
+        "Tổng giao dịch": 280000000.0,
+        "Số lần giao dịch": 560,
+        "Trung bình giao dịch": 500000.0
+    }
+]
